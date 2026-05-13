@@ -52,7 +52,14 @@ def checkout(request):
 
     if request.method == 'POST':
         addr_id = request.POST.get('address_id')
-        addr = get_object_or_404(Address, pk=addr_id, user=request.user)
+        if not addr_id:
+            messages.error(request, 'Please select a delivery address.')
+            return redirect('orders:checkout')
+        try:
+            addr = Address.objects.get(pk=addr_id, user=request.user)
+        except Address.DoesNotExist:
+            messages.error(request, 'Invalid address selected.')
+            return redirect('orders:checkout')
         pay_method = request.POST.get('payment_method', Order.PAY_COD)
         if pay_method not in (Order.PAY_RAZORPAY, Order.PAY_UPI, Order.PAY_COD):
             pay_method = Order.PAY_COD
