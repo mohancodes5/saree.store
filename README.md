@@ -1,4 +1,4 @@
-# Saree Store — Django ecommerce (SQLite)
+# Saree Store — Django ecommerce (SQLite locally, PostgreSQL on Vercel)
 
 ## Quick start (localhost)
 
@@ -26,7 +26,10 @@ Copy `.env.example` to `.env` and adjust values for your host (or export variabl
 |----------|---------|
 | `DJANGO_SECRET_KEY` | Production secret |
 | `DJANGO_DEBUG` | `false` in production |
-| `DJANGO_ALLOWED_HOSTS` | Comma-separated hosts |
+| `DJANGO_ALLOWED_HOSTS` | Comma-separated hosts (defaults include `.vercel.app`) |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | Optional; comma-separated `https://…` origins for HTTPS POST (custom domains) |
+| `DATABASE_URL` | **Required on Vercel** — PostgreSQL URL (Neon, Supabase, Vercel Postgres, etc.) |
+| `DATABASE_SSL_REQUIRE` | `true` / `false` (default `true` for hosted Postgres) |
 | `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` | Razorpay checkout |
 | `WHATSAPP_PROVIDER` | `auto` (default), `meta`, `twilio`, or `stub` (console only) |
 | `META_WHATSAPP_TOKEN`, `META_WHATSAPP_PHONE_NUMBER_ID`, `META_WHATSAPP_API_VERSION` | [Meta WhatsApp Cloud API](https://developers.facebook.com/docs/whatsapp/cloud-api) |
@@ -44,6 +47,23 @@ Without Razorpay keys, checkout still works with **COD**.
 - `media/` — uploaded product/banner/review images
 - `services/` — Razorpay + WhatsApp (Meta Cloud API and/or Twilio)
 
-## Production notes
+## Deploying on Vercel
 
-Use a real WSGI server (e.g. Gunicorn + Nginx), set `DEBUG=False`, configure `ALLOWED_HOSTS`, serve `MEDIA`/`STATIC` via the web server, and use environment-based secrets.
+Vercel’s filesystem is **read-only** (except `/tmp`). **SQLite will not work** for login, orders, or any writes.
+
+1. Create a **PostgreSQL** database (e.g. [Vercel Postgres](https://vercel.com/docs/storage/vercel-postgres), [Neon](https://neon.tech), or [Supabase](https://supabase.com)).
+2. In the Vercel project → **Settings → Environment Variables**, set:
+   - `DATABASE_URL` — Postgres connection string (usually includes `sslmode=require`).
+   - `DJANGO_SECRET_KEY` — long random string.
+   - `DJANGO_DEBUG` — `false` for production.
+   - Optional: `DJANGO_CSRF_TRUSTED_ORIGINS` — e.g. `https://your-app.vercel.app` (if `VERCEL_URL` is not enough for your domain).
+3. Redeploy. Build runs `migrate` + `collectstatic` via `vercel.json`.
+4. Create an admin user against Postgres (local one-off, with `DATABASE_URL` set):
+
+   `python manage.py createsuperuser`
+
+Uploaded **product images** on Vercel go to `/tmp` by default (ephemeral). For real media storage, wire **S3** or **Cloudinary** (see Django `STORAGES`).
+
+## General production (VPS / Docker)
+
+Use a WSGI server (e.g. Gunicorn + Nginx), set `DEBUG=False`, configure `ALLOWED_HOSTS`, serve `MEDIA`/`STATIC` via the web server or WhiteNoise + object storage, and keep secrets in the environment. Use `DATABASE_URL` for Postgres there as well if you like.

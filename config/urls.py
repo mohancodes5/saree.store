@@ -29,7 +29,7 @@ urlpatterns = [
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
 ]
 
-if settings.DEBUG:
+if settings.DEBUG or getattr(settings, 'ON_VERCEL', False):
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = 'config.views.handler_not_found'
