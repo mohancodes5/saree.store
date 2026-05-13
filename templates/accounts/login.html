@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-md rounded-3xl bg-white p-8 shadow-soft ring-1 ring-stone-100">
+  <h1 class="text-xl font-semibold">Welcome back</h1>
+  <form method="post" class="mt-6 space-y-3 text-sm">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div><label class="text-xs text-stone-500">Username</label>{{ form.username }}</div>
+    <div><label class="text-xs text-stone-500">Password</label>{{ form.password }}</div>
+    <button class="w-full rounded-full bg-brand-600 py-2.5 font-semibold text-white">Login</button>
+  </form>
+  <p class="mt-4 text-center text-xs text-stone-500"><a href="{% url 'accounts:password_reset' %}" class="text-brand-600">Forgot password?</a></p>
+  <p class="mt-2 text-center text-xs">New here? <a href="{% url 'accounts:signup' %}" class="font-semibold text-brand-600">Create account</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "adminpanel/base_admin.html" %}
+{% block content %}
+<h1 class="text-2xl font-semibold">Banners</h1>
+<form method="post" enctype="multipart/form-data" class="mt-6 max-w-md space-y-2 rounded-2xl border border-slate-800 bg-slate-900/40 p-4 text-sm">
+  {% csrf_token %}
+  <input name="title" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2" placeholder="Title" required>
+  <input name="subtitle" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2" placeholder="Subtitle">
+  <input name="link" class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2" placeholder="/shop/">
+  <input type="file" name="image" required class="text-xs">
+  <button class="rounded-full bg-pink-500 px-4 py-2 text-xs font-semibold text-white">Upload</button>
+</form>
+<div class="mt-8 grid gap-3 md:grid-cols-3">
+  {% for b in banners %}
+    <div class="overflow-hidden rounded-xl border border-slate-800">
+      <img src="{{ b.image.url }}" class="h-32 w-full object-cover" alt="">
+      <p class="p-2 text-xs">{{ b.title }}</p>
+    </div>
+  {% endfor %}
+</div>
+{% endblock %}

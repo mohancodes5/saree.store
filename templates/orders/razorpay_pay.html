@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Pay with Razorpay{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-md rounded-3xl bg-white p-8 text-center shadow-soft ring-1 ring-stone-100">
+  <p class="text-sm text-stone-600">Pay ₹{{ order.total }} for order</p>
+  <p class="mt-1 font-mono text-lg font-semibold">{{ order.order_number }}</p>
+  <button id="rzp-button" class="mt-6 w-full rounded-full bg-brand-600 py-3 text-sm font-semibold text-white">Pay now</button>
+</div>
+<form id="rzp-verify" action="{% url 'payments:razorpay_verify' %}" method="post" class="hidden">
+  {% csrf_token %}
+  <input type="hidden" name="order_id" value="{{ order.pk }}">
+  <input type="hidden" name="razorpay_payment_id" id="rzp-payment-id">
+  <input type="hidden" name="razorpay_signature" id="rzp-signature">
+</form>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  const options = {
+    key: "{{ razorpay_key }}",
+    amount: {{ amount_paise }},
+    currency: "INR",
+    name: "Saree Studio",
+    description: "Order {{ order.order_number }}",
+    order_id: "{{ order.razorpay_order_id }}",
+    handler: function (response) {
+      document.getElementById("rzp-payment-id").value = response.razorpay_payment_id;
+      document.getElementById("rzp-signature").value = response.razorpay_signature;
+      document.getElementById("rzp-verify").submit();
+    },
+    prefill: { name: "{{ order.user.username|escapejs }}", email: "{{ order.user.email|default:''|escapejs }}" },
+    theme: { color: "#db2777" },
+  };
+  document.getElementById("rzp-button").onclick = function () {
+    var rzp = new Razorpay(options);
+    rzp.open();
+  };
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-6 text-2xl font-semibold">{{ category.name }}</h1>
+<div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+  {% for p in page_obj %}
+    {% include "partials/product_card.html" with p=p %}
+  {% endfor %}
+</div>
+{% endblock %}

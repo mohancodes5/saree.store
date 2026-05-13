@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Your bag · Saree Studio{% endblock %}
+{% block content %}
+<h1 class="mb-6 text-2xl font-semibold">Your bag</h1>
+<div class="grid gap-8 md:grid-cols-3">
+  <div class="md:col-span-2 space-y-3">
+    {% for line in items %}
+      <div class="flex gap-3 rounded-2xl bg-white p-3 shadow-soft ring-1 ring-stone-100">
+        {% with img=line.product.primary_image %}
+          {% if img %}<img src="{{ img.image.url }}" class="h-24 w-20 rounded-xl object-cover" alt="">{% endif %}
+        {% endwith %}
+        <div class="flex flex-1 flex-col text-sm">
+          <a href="{{ line.product.get_absolute_url }}" class="font-medium hover:text-brand-600">{{ line.product.name }}</a>
+          {% if line.color_name %}<span class="text-xs text-stone-500">{{ line.color_name }}</span>{% endif %}
+          <div class="mt-auto flex flex-wrap items-center gap-2">
+            <form action="{% url 'cart:update' %}" method="post" class="flex items-center gap-1">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ line.id }}">
+              <input type="number" name="quantity" value="{{ line.quantity }}" min="1" class="w-16 rounded-lg border px-2 py-1 text-xs">
+              <button class="text-xs font-semibold text-brand-600">Update</button>
+            </form>
+            <form action="{% url 'cart:remove' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ line.id }}">
+              <button class="text-xs text-stone-500 underline">Remove</button>
+            </form>
+            <form action="{% url 'cart:save_later' %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="item_id" value="{{ line.id }}">
+              <button class="text-xs text-stone-500 underline">Save for later</button>
+            </form>
+          </div>
+        </div>
+        <div class="text-right text-sm font-semibold">₹{{ line.product.effective_price|floatformat:0|intcomma }}</div>
+      </div>
+    {% empty %}
+      <p class="text-stone-600">Your bag is empty. <a href="{% url 'products:shop' %}" class="font-semibold text-brand-600">Continue shopping</a></p>
+    {% endfor %}
+
+    {% if saved_items %}
+      <h2 class="pt-6 text-lg font-semibold">Saved for later</h2>
+      {% for line in saved_items %}
+        <div class="flex items-center justify-between rounded-2xl border border-dashed border-stone-200 p-3 text-sm">
+          <span>{{ line.product.name }}</span>
+          <form action="{% url 'cart:move_to_cart' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="item_id" value="{{ line.id }}">
+            <button class="text-xs font-semibold text-brand-600">Move to bag</button>
+          </form>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div>
+    <div class="sticky top-24 rounded-2xl bg-white p-5 shadow-soft ring-1 ring-stone-100">
+      <p class="text-sm text-stone-600">Subtotal</p>
+      <p class="text-xl font-bold">₹{{ subtotal|floatformat:0|intcomma }}</p>
+      {% if coupon %}
+        <p class="mt-2 text-xs text-emerald-700">Coupon {{ coupon.code }}: −₹{{ discount|floatformat:0|intcomma }}</p>
+      {% endif %}
+      <p class="mt-2 text-lg font-semibold">Payable <span class="text-brand-700">₹{{ total|floatformat:0|intcomma }}</span></p>
+      <form action="{% url 'cart:coupon' %}" method="post" class="mt-4 flex gap-2">
+        {% csrf_token %}
+        <input name="code" placeholder="Coupon code" class="flex-1 rounded-xl border px-3 py-2 text-sm">
+        <button class="rounded-full bg-stone-900 px-3 py-2 text-xs font-semibold text-white">Apply</button>
+      </form>
+      {% if cart.coupon_code %}
+        <form action="{% url 'cart:coupon_remove' %}" method="post" class="mt-2">{% csrf_token %}<button class="text-xs underline">Remove coupon</button></form>
+      {% endif %}
+      {% if user.is_authenticated %}
+        <a href="{% url 'orders:checkout' %}" class="mt-6 block rounded-full bg-brand-600 py-3 text-center text-sm font-semibold text-white hover:bg-brand-700">Checkout</a>
+      {% else %}
+        <a href="{% url 'accounts:login' %}?next={% url 'orders:checkout' %}" class="mt-6 block rounded-full bg-brand-600 py-3 text-center text-sm font-semibold text-white">Login to checkout</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

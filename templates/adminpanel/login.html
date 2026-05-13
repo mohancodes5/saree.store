@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-slate-950 text-slate-100">
+  <form method="post" class="w-full max-w-sm rounded-2xl border border-slate-800 bg-slate-900/60 p-8 text-sm">
+    {% csrf_token %}
+    <p class="text-lg font-semibold text-pink-400">Store Admin</p>
+    {{ form.non_field_errors }}
+    <div class="mt-4 space-y-2">
+      <label class="text-xs text-slate-400">Username</label>
+      {{ form.username }}
+      <label class="text-xs text-slate-400">Password</label>
+      {{ form.password }}
+    </div>
+    <button class="mt-6 w-full rounded-full bg-pink-500 py-2 font-semibold text-white">Login</button>
+  </form>
+</body>
+</html>

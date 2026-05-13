@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_number }}{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-lg rounded-3xl bg-white p-8 text-center shadow-soft ring-1 ring-stone-100">
+  <p class="text-sm text-emerald-600">Thank you!</p>
+  <h1 class="mt-2 text-2xl font-semibold">Order placed</h1>
+  <p class="mt-2 text-sm text-stone-600">Order ID <span class="font-mono font-semibold">{{ order.order_number }}</span></p>
+  <p class="mt-4 text-xs text-stone-500">We will WhatsApp you updates on {{ order.phone }}.</p>
+  <div class="mt-6 flex flex-col gap-2 text-sm">
+    <a href="{% url 'orders:detail' order.pk %}" class="rounded-full bg-brand-600 py-2 font-semibold text-white">Track order</a>
+    <a href="{% url 'orders:invoice' order.pk %}" class="rounded-full border border-stone-200 py-2 font-semibold">View invoice</a>
+  </div>
+</div>
+{% endblock %}

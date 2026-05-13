@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Saree Studio — Curated sarees online{% endblock %}
+{% block content %}
+<section class="mb-8 overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-stone-100">
+  <div class="swiper flex snap-x snap-mandatory overflow-x-auto scroll-smooth">
+    {% for b in banners %}
+      <div class="relative min-w-full snap-center">
+        {% if b.link %}<a href="{{ b.link }}">{% endif %}
+        <img src="{{ b.image.url }}" alt="{{ b.title }}" class="h-48 w-full object-cover sm:h-64 md:h-72">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+        <div class="absolute bottom-4 left-4 text-white">
+          <p class="text-lg font-semibold">{{ b.title }}</p>
+          {% if b.subtitle %}<p class="text-sm text-white/90">{{ b.subtitle }}</p>{% endif %}
+        </div>
+        {% if b.link %}</a>{% endif %}
+      </div>
+    {% empty %}
+      <div class="flex min-w-full flex-col items-center justify-center bg-gradient-to-br from-brand-50 to-white px-6 py-16 text-center">
+        <p class="text-2xl font-semibold text-brand-700">Effortless festive shopping</p>
+        <p class="mt-2 max-w-md text-sm text-stone-600">Soft silks, airy cottons & party-ready drapes — curated like Meesho, polished like Ajio.</p>
+        <a href="{% url 'products:shop' %}" class="mt-6 rounded-full bg-brand-600 px-6 py-2 text-sm font-semibold text-white shadow-soft hover:bg-brand-700">Browse sarees</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% if flash_sale_products %}
+<section class="mb-10 rounded-3xl bg-gradient-to-r from-amber-50 to-orange-50 p-5 shadow-soft ring-1 ring-amber-100">
+  <div class="mb-4 flex items-center justify-between">
+    <h2 class="text-lg font-semibold text-amber-900">Flash sale</h2>
+    <span class="text-xs font-medium text-amber-800">Limited time</span>
+  </div>
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
+    {% for p in flash_sale_products %}
+      {% include "partials/product_card.html" with p=p %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="mb-10">
+  <div class="mb-4 flex items-center justify-between">
+    <h2 class="text-lg font-semibold">Featured sarees</h2>
+    <a href="{% url 'products:shop' %}?sort=popular" class="text-xs font-semibold text-brand-600">See all</a>
+  </div>
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    {% for p in featured %}
+      {% include "partials/product_card.html" with p=p %}
+    {% empty %}
+      <p class="text-sm text-stone-500">Add products from the store admin.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mb-10">
+  <h2 class="mb-4 text-lg font-semibold">Trending collections</h2>
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    {% for p in trending %}
+      {% include "partials/product_card.html" with p=p %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mb-10 rounded-3xl bg-white p-5 shadow-soft ring-1 ring-stone-100">
+  <h2 class="mb-4 text-lg font-semibold">Shop by category</h2>
+  <div class="flex flex-wrap gap-2">
+    {% for c in categories %}
+      <a href="{{ c.get_absolute_url }}" class="rounded-full border border-stone-200 bg-stone-50 px-4 py-1.5 text-sm font-medium hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700">{{ c.name }}</a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mb-10">
+  <h2 class="mb-4 text-lg font-semibold">New arrivals</h2>
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    {% for p in new_arrivals %}
+      {% include "partials/product_card.html" with p=p %}
+    {% endfor %}
+  </div>
+</section>
+
+<section>
+  <h2 class="mb-4 text-lg font-semibold">Best sellers</h2>
+  <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+    {% for p in best_sellers %}
+      {% include "partials/product_card.html" with p=p %}
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

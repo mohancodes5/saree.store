@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Shop sarees · Saree Studio{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-6 md:flex-row">
+  <aside class="md:w-56 md:shrink-0">
+    <div class="rounded-2xl bg-white p-4 shadow-soft ring-1 ring-stone-100">
+      <p class="mb-3 text-sm font-semibold">Filters</p>
+      <form method="get" class="space-y-3 text-sm">
+        <input type="hidden" name="q" value="{{ request.GET.q }}">
+        <div>
+          <label class="text-xs text-stone-500">Fabric</label>
+          <select name="fabric" class="mt-1 w-full rounded-xl border border-stone-200 px-2 py-1.5">
+            <option value="">Any</option>
+            {% for v,l in product_fabric_choices %}
+              <option value="{{ v }}" {% if request.GET.fabric == v %}selected{% endif %}>{{ l }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-stone-500">Occasion</label>
+          <select name="occasion" class="mt-1 w-full rounded-xl border border-stone-200 px-2 py-1.5">
+            <option value="">Any</option>
+            {% for v,l in product_occasion_choices %}
+              <option value="{{ v }}" {% if request.GET.occasion == v %}selected{% endif %}>{{ l }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-xs text-stone-500">Min ₹</label>
+            <input name="price_min" value="{{ request.GET.price_min }}" class="mt-1 w-full rounded-xl border border-stone-200 px-2 py-1.5">
+          </div>
+          <div>
+            <label class="text-xs text-stone-500">Max ₹</label>
+            <input name="price_max" value="{{ request.GET.price_max }}" class="mt-1 w-full rounded-xl border border-stone-200 px-2 py-1.5">
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-stone-500">Color contains</label>
+          <input name="color" value="{{ request.GET.color }}" class="mt-1 w-full rounded-xl border border-stone-200 px-2 py-1.5">
+        </div>
+        <div>
+          <label class="text-xs text-stone-500">Sort</label>
+          <select name="sort" class="mt-1 w-full rounded-xl border border-stone-200 px-2 py-1.5">
+            <option value="">Default</option>
+            <option value="latest" {% if request.GET.sort == 'latest' %}selected{% endif %}>Latest</option>
+            <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Popularity</option>
+            <option value="price_low" {% if request.GET.sort == 'price_low' %}selected{% endif %}>Price low</option>
+            <option value="price_high" {% if request.GET.sort == 'price_high' %}selected{% endif %}>Price high</option>
+          </select>
+        </div>
+        <button class="w-full rounded-full bg-brand-600 py-2 text-xs font-semibold text-white">Apply</button>
+      </form>
+    </div>
+  </aside>
+  <div class="flex-1">
+    <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+      <h1 class="text-xl font-semibold">All sarees</h1>
+      <p class="text-xs text-stone-500">{{ page_obj.paginator.count }} styles</p>
+    </div>
+    <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
+      {% for p in page_obj %}
+        {% include "partials/product_card.html" with p=p %}
+      {% empty %}
+        <p class="text-sm text-stone-500">No products match your filters.</p>
+      {% endfor %}
+    </div>
+    {% if page_obj.has_other_pages %}
+      <div class="mt-6 flex justify-center gap-2 text-sm">
+        {% if page_obj.has_previous %}
+          <a class="rounded-full border px-3 py-1" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">Prev</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+          <a class="rounded-full border px-3 py-1" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">Next</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

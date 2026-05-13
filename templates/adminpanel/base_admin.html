@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Store Admin{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <div class="flex min-h-screen">
+    <aside class="hidden w-56 shrink-0 border-r border-slate-800 p-4 md:block">
+      <p class="text-lg font-semibold text-pink-400">Store Admin</p>
+      <nav class="mt-6 space-y-2 text-sm">
+        <a class="block rounded-lg px-3 py-2 hover:bg-slate-900" href="{% url 'adminpanel:dashboard' %}">Dashboard</a>
+        <a class="block rounded-lg px-3 py-2 hover:bg-slate-900" href="{% url 'adminpanel:products' %}">Products</a>
+        <a class="block rounded-lg px-3 py-2 hover:bg-slate-900" href="{% url 'adminpanel:categories' %}">Categories</a>
+        <a class="block rounded-lg px-3 py-2 hover:bg-slate-900" href="{% url 'adminpanel:orders' %}">Orders</a>
+        <a class="block rounded-lg px-3 py-2 hover:bg-slate-900" href="{% url 'adminpanel:customers' %}">Customers</a>
+        <a class="block rounded-lg px-3 py-2 hover:bg-slate-900" href="{% url 'adminpanel:coupons' %}">Coupons</a>
+        <a class="block rounded-lg px-3 py-2 hover:bg-slate-900" href="{% url 'adminpanel:banners' %}">Banners</a>
+        <a class="mt-8 block rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-900" href="{% url 'products:home' %}">← Storefront</a>
+        <a class="block rounded-lg px-3 py-2 text-slate-400 hover:bg-slate-900" href="{% url 'accounts:logout' %}">Logout</a>
+      </nav>
+    </aside>
+    <main class="flex-1 p-6">
+      {% if messages %}
+        <div class="mb-4 space-y-2">
+          {% for m in messages %}<div class="rounded-lg bg-slate-900 px-3 py-2 text-sm">{{ m }}</div>{% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

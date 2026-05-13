@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Invoice {{ order.order_number }}{% endblock %}
+{% block content %}
+<div class="rounded-3xl bg-white p-8 shadow-soft ring-1 ring-stone-100 print:shadow-none">
+  <div class="flex flex-wrap justify-between gap-4">
+    <div>
+      <p class="text-lg font-semibold">Saree Studio</p>
+      <p class="text-xs text-stone-500">GSTIN: demo · support@sareestudio.local</p>
+    </div>
+    <div class="text-right text-sm">
+      <p class="font-mono font-semibold">{{ order.order_number }}</p>
+      <p class="text-stone-500">{{ order.created_at|date:"M d, Y H:i" }}</p>
+    </div>
+  </div>
+  <div class="mt-6 grid gap-6 text-sm md:grid-cols-2">
+    <div>
+      <p class="text-xs font-semibold uppercase text-stone-500">Bill to</p>
+      <p class="font-medium">{{ order.address_snapshot.full_name }}</p>
+      <p>{{ order.address_snapshot.line1 }} {{ order.address_snapshot.line2 }}</p>
+      <p>{{ order.address_snapshot.city }}, {{ order.address_snapshot.state }} {{ order.address_snapshot.pincode }}</p>
+      <p>{{ order.address_snapshot.phone }}</p>
+    </div>
+    <div>
+      <p class="text-xs font-semibold uppercase text-stone-500">Payment</p>
+      <p>{{ order.get_payment_method_display }} — {{ order.payment_status }}</p>
+    </div>
+  </div>
+  <table class="mt-8 w-full text-left text-sm">
+    <thead><tr class="border-b text-xs uppercase text-stone-500"><th class="py-2">Item</th><th class="py-2">Qty</th><th class="py-2 text-right">Price</th></tr></thead>
+    <tbody>
+      {% for line in order.items.all %}
+        <tr class="border-b border-stone-100">
+          <td class="py-2">{{ line.product_name }}</td>
+          <td class="py-2">{{ line.quantity }}</td>
+          <td class="py-2 text-right">₹{{ line.unit_price|floatformat:0|intcomma }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="mt-6 max-w-xs space-y-1 text-sm md:ml-auto">
+    <div class="flex justify-between"><span>Subtotal</span><span>₹{{ order.subtotal|floatformat:0|intcomma }}</span></div>
+    <div class="flex justify-between"><span>Shipping</span><span>₹{{ order.shipping|floatformat:0|intcomma }}</span></div>
+    <div class="flex justify-between text-base font-bold"><span>Total</span><span>₹{{ order.total|floatformat:0|intcomma }}</span></div>
+  </div>
+  <button onclick="window.print()" class="mt-8 rounded-full bg-stone-900 px-6 py-2 text-sm font-semibold text-white print:hidden">Print</button>
+</div>
+{% endblock %}

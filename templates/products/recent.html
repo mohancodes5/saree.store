@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 class="mb-6 text-2xl font-semibold">Recently viewed</h1>
+<div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+  {% for p in products %}
+    {% include "partials/product_card.html" with p=p %}
+  {% empty %}
+    <p class="text-sm text-stone-600">No history yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

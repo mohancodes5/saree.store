@@ -1,0 +1,44 @@
+{% extends "adminpanel/base_admin.html" %}
+{% block content %}
+<h1 class="text-2xl font-semibold">{% if product %}Edit{% else %}New{% endif %} product</h1>
+<form method="post" enctype="multipart/form-data" class="mt-6 max-w-2xl space-y-3 text-sm">
+  {% csrf_token %}
+  <input type="text" name="name" value="{% if product %}{{ product.name }}{% endif %}" placeholder="Name" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2" required>
+  <input type="text" name="slug" value="{% if product %}{{ product.slug }}{% endif %}" placeholder="Slug (optional)" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2">
+  <select name="category" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2" required>
+    {% for c in categories %}<option value="{{ c.id }}" {% if product and product.category_id == c.id %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select>
+  <textarea name="description" rows="4" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2" placeholder="Description">{% if product %}{{ product.description }}{% endif %}</textarea>
+  <div class="grid grid-cols-2 gap-2">
+    <select name="fabric" class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2">
+      {% for v,l in fabric_choices %}<option value="{{ v }}" {% if product and product.fabric == v %}selected{% endif %}>{{ l }}</option>{% endfor %}
+    </select>
+    <select name="occasion" class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2">
+      {% for v,l in occasion_choices %}<option value="{{ v }}" {% if product and product.occasion == v %}selected{% endif %}>{{ l }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="grid grid-cols-2 gap-2">
+    <input type="number" step="0.01" name="price" value="{% if product %}{{ product.price }}{% endif %}" class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2" placeholder="Price" required>
+    <input type="number" step="0.01" name="sale_price" value="{% if product and product.sale_price %}{{ product.sale_price }}{% endif %}" class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2" placeholder="Sale price">
+  </div>
+  <div class="grid grid-cols-2 gap-2">
+    <input type="number" name="stock" value="{% if product %}{{ product.stock }}{% else %}0{% endif %}" class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2">
+    <input type="number" name="delivery_days" value="{% if product %}{{ product.delivery_days }}{% else %}5{% endif %}" class="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2">
+  </div>
+  <input type="text" name="meta_title" value="{% if product %}{{ product.meta_title }}{% endif %}" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2" placeholder="Meta title">
+  <input type="text" name="meta_description" value="{% if product %}{{ product.meta_description }}{% endif %}" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2" placeholder="Meta description">
+  <input type="datetime-local" name="flash_sale_end" value="{% if product and product.flash_sale_end %}{{ product.flash_sale_end|date:'Y-m-d\TH:i' }}{% endif %}" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2">
+  <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="is_active" {% if not product or product.is_active %}checked{% endif %}> Active</label>
+  <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="is_featured" {% if product and product.is_featured %}checked{% endif %}> Featured</label>
+  <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="is_trending" {% if product and product.is_trending %}checked{% endif %}> Trending</label>
+  <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="is_new_arrival" {% if product and product.is_new_arrival %}checked{% endif %}> New arrival</label>
+  <label class="flex items-center gap-2 text-xs"><input type="checkbox" name="is_best_seller" {% if product and product.is_best_seller %}checked{% endif %}> Best seller</label>
+  <input type="text" name="colors" placeholder="Colors comma separated" class="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2">
+  <label class="text-xs text-slate-400">Add images</label>
+  <input type="file" name="images" multiple class="text-xs">
+  <button class="rounded-full bg-pink-500 px-6 py-2 font-semibold text-white">Save</button>
+</form>
+{% if product %}
+<form action="{% url 'adminpanel:product_delete' product.pk %}" method="post" class="mt-4 max-w-2xl" onsubmit="return confirm('Delete this product?');">{% csrf_token %}<button class="text-xs text-red-400">Delete product</button></form>
+{% endif %}
+{% endblock %}
