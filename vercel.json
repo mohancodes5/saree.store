@@ -2,9 +2,10 @@
   "buildCommand": "python manage.py migrate --noinput && python manage.py collectstatic --noinput",
   "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }],
   "functions": {
-    "api/index.py": {
+    "api/**/*.py": {
       "memory": 1024,
-      "maxDuration": 30
+      "maxDuration": 30,
+      "runtime": "python3.13"
     }
   }
 }
